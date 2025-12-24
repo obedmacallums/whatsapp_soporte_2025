@@ -93,7 +93,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
   const categoryColor = CATEGORY_COLORS[example.category] || '#94a3b8';
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100 flex flex-col h-[520px]">
+    <div className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100 flex flex-col h-auto md:h-[520px]">
       {/* Header con badge de categoría */}
       <div className="flex items-center justify-between mb-6">
         <SectionTitle>Ejemplos de Conversaciones</SectionTitle>
@@ -119,7 +119,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
       </div>
 
       {/* Insights */}
-      <div className="mb-8 flex-grow overflow-hidden">
+      <div className="mb-8 flex-grow overflow-y-auto pr-2 custom-scrollbar">
         <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">
           Resumen del Caso
         </h3>
