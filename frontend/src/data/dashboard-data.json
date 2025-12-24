@@ -1,0 +1,263 @@
+{
+  "kpis": {
+    "totalConversaciones": 559,
+    "totalMensajes": 32136,
+    "promedioMensajes": 57.5,
+    "conversacionMasLarga": 898
+  },
+  "categorias": [
+    {
+      "name": "GNSS",
+      "value": 172
+    },
+    {
+      "name": "SOFTWARE",
+      "value": 162
+    },
+    {
+      "name": "OTRO",
+      "value": 72
+    },
+    {
+      "name": "OPTICA",
+      "value": 51
+    },
+    {
+      "name": "COLECTORA",
+      "value": 39
+    },
+    {
+      "name": "UAS",
+      "value": 29
+    },
+    {
+      "name": "ESCANER",
+      "value": 20
+    },
+    {
+      "name": "RADIO",
+      "value": 14
+    }
+  ],
+  "resolucion": [
+    {
+      "name": "Parcial",
+      "value": 209,
+      "pct": "37%"
+    },
+    {
+      "name": "Resuelto",
+      "value": 207,
+      "pct": "37%"
+    },
+    {
+      "name": "Sin Seguimiento",
+      "value": 113,
+      "pct": "20%"
+    },
+    {
+      "name": "No Resuelto",
+      "value": 30,
+      "pct": "5%"
+    }
+  ],
+  "satisfaccion": [
+    {
+      "name": "Alta",
+      "value": 264
+    },
+    {
+      "name": "Media",
+      "value": 178
+    },
+    {
+      "name": "No Determinable",
+      "value": 92
+    },
+    {
+      "name": "Baja",
+      "value": 25
+    }
+  ],
+  "tendenciaMensual": [
+    {
+      "mes": "Ene",
+      "conversaciones": 96,
+      "mensajes": 7933
+    },
+    {
+      "mes": "Feb",
+      "conversaciones": 59,
+      "mensajes": 3320
+    },
+    {
+      "mes": "Mar",
+      "conversaciones": 50,
+      "mensajes": 3247
+    },
+    {
+      "mes": "Apr",
+      "conversaciones": 42,
+      "mensajes": 2187
+    },
+    {
+      "mes": "May",
+      "conversaciones": 47,
+      "mensajes": 3066
+    },
+    {
+      "mes": "Jun",
+      "conversaciones": 60,
+      "mensajes": 4337
+    },
+    {
+      "mes": "Jul",
+      "conversaciones": 34,
+      "mensajes": 1754
+    },
+    {
+      "mes": "Ago",
+      "conversaciones": 37,
+      "mensajes": 1672
+    },
+    {
+      "mes": "Sep",
+      "conversaciones": 36,
+      "mensajes": 1342
+    },
+    {
+      "mes": "Oct",
+      "conversaciones": 38,
+      "mensajes": 1281
+    },
+    {
+      "mes": "Nov",
+      "conversaciones": 36,
+      "mensajes": 1287
+    },
+    {
+      "mes": "Dic",
+      "conversaciones": 24,
+      "mensajes": 710
+    }
+  ],
+  "tiposProblema": [
+    {
+      "tipo": "Consulta Técnica",
+      "cantidad": 131
+    },
+    {
+      "tipo": "Configuración",
+      "cantidad": 96
+    },
+    {
+      "tipo": "Software",
+      "cantidad": 83
+    },
+    {
+      "tipo": "Licencia",
+      "cantidad": 80
+    },
+    {
+      "tipo": "Capacitación",
+      "cantidad": 49
+    },
+    {
+      "tipo": "Hardware",
+      "cantidad": 43
+    },
+    {
+      "tipo": "Conectividad",
+      "cantidad": 41
+    }
+  ],
+  "productos": [
+    {
+      "producto": "TBC",
+      "consultas": 86
+    },
+    {
+      "producto": "R12",
+      "consultas": 56
+    },
+    {
+      "producto": "R8",
+      "consultas": 22
+    },
+    {
+      "producto": "Trimble Access",
+      "consultas": 18
+    },
+    {
+      "producto": "Trimble S5",
+      "consultas": 18
+    },
+    {
+      "producto": "TDC600",
+      "consultas": 12
+    },
+    {
+      "producto": "R780",
+      "consultas": 9
+    }
+  ],
+  "radarData": [
+    {
+      "subject": "Resolución",
+      "A": 74,
+      "fullMark": 100
+    },
+    {
+      "subject": "Satisfacción",
+      "A": 79,
+      "fullMark": 100
+    },
+    {
+      "subject": "Seguimiento",
+      "A": 80,
+      "fullMark": 100
+    }
+  ],
+  "conversationExamples": [
+    {
+      "id": "56996432619@s.whatsapp.net",
+      "category": "SOFTWARE",
+      "mainQuestion": "Problemas con instalación de MDT 9 en BricsCAD v24 - licencia no se activa correctamente en nueva versión",
+      "insights": "Caso recurrente del mismo cliente (3 consultas distintas). Primera consulta: instalación en PC nuevo (resuelta rápido). Segunda consulta: error importación CSV por orden coordenadas Norte-Este (resuelta mismo día). Tercera consulta: MDT 9 no compatible con BricsCAD 24, esperó respuesta fábrica España por diferencia horaria. Cliente menciona costo mantención ~$1000 USD. Resolución final confirmada tras espera de fin de semana.",
+      "subcategory": "BricsCAD MDT",
+      "totalMessages": 138
+    },
+    {
+      "id": "56934077058@s.whatsapp.net",
+      "category": "GNSS",
+      "mainQuestion": "¿En qué canal/frecuencia trabajan los GPS R12i? Error al procesar líneas base desde base activa con receptor HI-Target",
+      "insights": "Cliente tuvo múltiples consultas: 1) frecuencias de R12i (resuelto), 2) error post-proceso con base activa PMEJ y receptor HI-Target por distancia excesiva vs tiempo observación (50min insuficiente). Solución: 2hrs+ o usar base Punta Jorgino. Problema secundario: segundos intercalados inválidos, solucionado actualizando Trimble GPS Config Files. Cliente agradeció con emojis positivos.",
+      "subcategory": "R12i",
+      "totalMessages": 82
+    },
+    {
+      "id": "56978585727@s.whatsapp.net",
+      "category": "COLECTORA",
+      "mainQuestion": "Consulta sobre compatibilidad de TDC600 con Trimble Access y Field Map para uso con DA2",
+      "insights": "Cliente inicialmente solicitó cotización de equipos (puntos de control, TDC6, DA2, Rod and Bipod). Derivado a ventas. Posteriormente consultó por TDC600 vía telefónica. Confirmado que TDC600 funciona con Field Map sin licencia Trimble Access. Cliente trabaja con DA2 y pack 10 horas, hace mapeo para ArcGIS Pro. Derivado a Felipe (ventas) para cotización final.",
+      "subcategory": "TDC600",
+      "totalMessages": 59
+    },
+    {
+      "id": "56955183099@s.whatsapp.net",
+      "category": "OPTICA",
+      "mainQuestion": "¿Cómo ajustar coordenadas después de error en calaje? Y luego: ¿Cómo modificar coordenadas en nube de puntos SX10 de local a UTM?",
+      "insights": "Cliente recurrente con múltiples consultas técnicas. Primer caso: ajuste de coordenadas por error de calaje resuelto con TBC. Segundo caso complejo: georeferenciación de nube SX10 con solo 2 puntos (requiere mínimo 3), solución alternativa con transformación geométrica. Cliente agradecido, busca capacitación continua en TBC y Cyclone.",
+      "subcategory": "Trimble C5, SX10, X7",
+      "totalMessages": 297
+    },
+    {
+      "id": "56971524968@s.whatsapp.net",
+      "category": "RADIO",
+      "mainQuestion": "Necesito agregar frecuencias de radio (450-470 MHz) a receptores GNSS para que funcionen con bote batimétrico y levantamientos simultáneos",
+      "insights": "Cliente DOH solicitó agregar frecuencia 467.05 MHz a 5 receptores R12i (3 iniciales + 2 adicionales). Requirió actualización via Trimble Installation Manager. Consultó sobre protocolo SATEL (no soportado). Problema con pines de cable mencionado. Múltiples equipos y necesidad de trabajo simultáneo.",
+      "subcategory": "TrimTalk (frecuencias radio para R12i)",
+      "totalMessages": 132
+    }
+  ]
+}

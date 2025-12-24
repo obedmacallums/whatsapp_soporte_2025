@@ -1,0 +1,54 @@
+# Python
+env/
+venv/
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data files (potentially sensitive)
+*.csv
+
+# Environment variables
+.env
+.env.local
+
+# Frontend (Node.js/React)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+env
+.claude/
+.playwright-mcp
