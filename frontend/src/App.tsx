@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import dashboardData from './data/dashboard-data.json';
+import soporteData from './data/soporte-dashboard-data.json';
+import uasData from './data/uas-dashboard-data.json';
 
 // Conversation example interface
 interface ConversationExample {
@@ -9,8 +10,11 @@ interface ConversationExample {
   mainQuestion: string;
   insights: string;
   subcategory: string;
-  totalMessages: number;
+  totalMessages: number | null;
 }
+
+// Data source type
+type DataSource = 'soporte' | 'uas';
 
 // Color mappings (UI layer)
 const CATEGORY_COLORS: Record<string, string> = {
@@ -23,7 +27,10 @@ const CATEGORY_COLORS: Record<string, string> = {
   'UAS': '#22d3d1',
   'ESCÁNER': '#10b981',
   'ESCANER': '#10b981',
-  'RADIO': '#34d399'
+  'RADIO': '#34d399',
+  // UAS specific categories
+  'SENSORES': '#f59e0b',
+  'RC': '#ec4899'
 };
 
 const RESOLUTION_COLORS: Record<string, string> = {
@@ -40,27 +47,24 @@ const SATISFACTION_COLORS: Record<string, string> = {
   'Baja': '#ef4444'
 };
 
-// Extract and transform data from imported JSON
-const { kpis, tendenciaMensual, tiposProblema, productos, radarData, conversationExamples } = dashboardData;
-
-// Apply colors to data that needs them
-const categorias = dashboardData.categorias.map(cat => ({
+// Helper functions to apply colors to data
+const applyCategoriasColors = (data: any[]) => data.map(cat => ({
   ...cat,
   color: CATEGORY_COLORS[cat.name] || '#94a3b8'
 }));
 
-const resolucion = dashboardData.resolucion.map(res => ({
+const applyResolucionColors = (data: any[]) => data.map(res => ({
   ...res,
   color: RESOLUTION_COLORS[res.name] || '#94a3b8'
 }));
 
-const satisfaccion = dashboardData.satisfaccion.map(sat => ({
+const applySatisfaccionColors = (data: any[]) => data.map(sat => ({
   ...sat,
   color: SATISFACTION_COLORS[sat.name] || '#94a3b8'
 }));
 
-const KPICard = ({ title, value, subtitle, gradient }) => (
-  <div className={`relative overflow-hidden rounded-2xl p-6 ${gradient} shadow-xl`}>
+const KPICard = ({ title, value, subtitle }) => (
+  <div className={`relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-gray-500 to-slate-700 shadow-xl`}>
     <div className="relative z-10">
       <p className="text-white/80 text-sm font-medium tracking-wide uppercase">{title}</p>
       <p className="text-white text-4xl font-bold mt-2">{value}</p>
@@ -114,7 +118,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
           {example.mainQuestion}
         </p>
         <p className="text-sm text-slate-500 mt-2">
-          {example.subcategory} · {example.totalMessages} mensajes
+          {example.subcategory}{example.totalMessages !== null && ` · ${example.totalMessages} mensajes`}
         </p>
       </div>
 
@@ -161,8 +165,25 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
 };
 
 export default function ReporteSoporte2025() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [dataSource, setDataSource] = useState<DataSource>('soporte');
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
+
+  // Select data based on current source
+  const dashboardData = dataSource === 'soporte' ? soporteData : uasData;
+
+  // Extract data with colors applied
+  const { kpis, tendenciaMensual, tiposProblema, productos, radarData, conversationExamples } = dashboardData;
+  const categorias = applyCategoriasColors(dashboardData.categorias);
+  const resolucion = applyResolucionColors(dashboardData.resolucion);
+  const satisfaccion = applySatisfaccionColors(dashboardData.satisfaccion);
+
+  // Check if data has messages (for conditional rendering)
+  const hasMessages = kpis.totalMensajes !== null;
+
+  // Reset carousel when changing data source
+  useEffect(() => {
+    setCurrentExampleIndex(0);
+  }, [dataSource]);
 
   // Carousel navigation handlers
   const handlePrevExample = () => {
@@ -186,39 +207,80 @@ export default function ReporteSoporte2025() {
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="flex items-center gap-4 mb-2">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Reporte de Soporte</h1>
-              <p className="text-indigo-300 text-lg">GEOCOM · WhatsApp Soporte GNSS-Óptica · 2025</p>
+              <h1 className="text-3xl font-bold tracking-tight">
+                {dataSource === 'soporte' ? 'Reporte de Soporte GNSS-Óptica' : 'Reporte de Soporte UAS'}
+              </h1>
+              <p className="text-indigo-300 text-lg">
+                GEOCOM · WhatsApp {dataSource === 'soporte' ? 'Soporte GNSS-Óptica' : 'Soporte UAS'} · 2025
+              </p>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Tab Navigation */}
+      <div className="max-w-7xl mx-auto px-6 -mt-6">
+        <div className="flex justify-center gap-4 bg-white/90 backdrop-blur-sm rounded-2xl p-2 shadow-lg border border-slate-200">
+          <button
+            onClick={() => setDataSource('soporte')}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+              dataSource === 'soporte'
+                ? 'bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-lg'
+                : 'bg-transparent text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Soporte GNSS-Óptica
+            </span>
+          </button>
+          <button
+            onClick={() => setDataSource('uas')}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+              dataSource === 'uas'
+                ? 'bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-lg'
+                : 'bg-transparent text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+              Soporte UAS
+            </span>
+          </button>
+        </div>
+      </div>
 
       <main className="max-w-7xl mx-auto px-6 py-10">
         {/* KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <KPICard
             title="Conversaciones"
-            value="559"
+            value={kpis.totalConversaciones.toLocaleString()}
             subtitle="clientes atendidos"
-            gradient="bg-gradient-to-br from-gray-500 to-slate-700"
+            gradient="bg-gradient-to-br from-indigo-500 to-violet-600"
           />
           <KPICard
             title="Mensajes Totales"
-            value="32,136"
-            subtitle="intercambiados"
-            gradient="bg-gradient-to-br from-gray-500 to-slate-700"
+            value={hasMessages ? kpis.totalMensajes?.toLocaleString() : 'N/A'}
+            subtitle={hasMessages ? "intercambiados" : "sin datos"}
+            gradient={`bg-gradient-to-br ${hasMessages ? 'from-emerald-500 to-teal-600' : 'from-slate-400 to-slate-500'}`}
           />
           <KPICard
             title="Promedio/Chat"
-            value="57.5"
-            subtitle="mensajes por caso"
-            gradient="bg-gradient-to-br from-gray-500 to-slate-700"
+            value={hasMessages ? kpis.promedioMensajes?.toString() : 'N/A'}
+            subtitle={hasMessages ? "mensajes por caso" : "sin datos"}
+            gradient={`bg-gradient-to-br ${hasMessages ? 'from-cyan-500 to-blue-600' : 'from-slate-400 to-slate-500'}`}
           />
           <KPICard
             title="Satisfacción Alta"
-            value="47%"
-            subtitle="264 clientes"
-            gradient="bg-gradient-to-br from-gray-500 to-slate-700"
+            value={`${Math.round((satisfaccion.find(s => s.name === 'Alta')?.value || 0) / kpis.totalConversaciones * 100)}%`}
+            subtitle={`${satisfaccion.find(s => s.name === 'Alta')?.value || 0} clientes`}
+            gradient="bg-gradient-to-br from-amber-500 to-orange-600"
           />
         </div>
 
@@ -284,40 +346,44 @@ export default function ReporteSoporte2025() {
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="mes" stroke="#64748b" />
               <YAxis yAxisId="left" stroke="#6366f1" />
-              <YAxis yAxisId="right" orientation="right" stroke="#10b981" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#1e293b', 
-                  border: 'none', 
+              {hasMessages && <YAxis yAxisId="right" orientation="right" stroke="#10b981" />}
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#1e293b',
+                  border: 'none',
                   borderRadius: '12px',
                   color: 'white'
                 }}
               />
               <Legend />
-              <Line 
+              <Line
                 yAxisId="left"
-                type="monotone" 
-                dataKey="conversaciones" 
-                stroke="#6366f1" 
+                type="monotone"
+                dataKey="conversaciones"
+                stroke="#6366f1"
                 strokeWidth={3}
                 dot={{ fill: '#6366f1', strokeWidth: 2, r: 6 }}
                 name="Conversaciones"
               />
-              <Line 
-                yAxisId="right"
-                type="monotone" 
-                dataKey="mensajes" 
-                stroke="#10b981" 
-                strokeWidth={3}
-                dot={{ fill: '#10b981', strokeWidth: 2, r: 6 }}
-                name="Mensajes"
-              />
+              {hasMessages && (
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="mensajes"
+                  stroke="#10b981"
+                  strokeWidth={3}
+                  dot={{ fill: '#10b981', strokeWidth: 2, r: 6 }}
+                  name="Mensajes"
+                />
+              )}
             </LineChart>
           </ResponsiveContainer>
           <div className="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
             <p className="text-amber-800 text-sm">
-              Enero fue el mes con mayor actividad (96 conversaciones). 
-              Se observa una tendencia estable durante el año con leve incremento en junio.
+              {dataSource === 'soporte'
+                ? 'Enero fue el mes con mayor actividad (96 conversaciones). Se observa una tendencia estable durante el año.'
+                : `Se registraron ${kpis.totalConversaciones} conversaciones durante el año. Los datos de mensajes no están disponibles para esta fuente.`
+              }
             </p>
           </div>
         </div>
@@ -439,22 +505,35 @@ export default function ReporteSoporte2025() {
             <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
               <h3 className="font-bold text-lg mb-2">Tasa de Resolución</h3>
               <p className="text-slate-300 text-sm">
-                74% de los casos fueron resueltos total o parcialmente. Solo 5% quedó sin resolver.
-                Excelente ratio para soporte técnico especializado.
+                {(() => {
+                  const resuelto = resolucion.find(r => r.name === 'Resuelto')?.value || 0;
+                  const parcial = resolucion.find(r => r.name === 'Parcial')?.value || 0;
+                  const noResuelto = resolucion.find(r => r.name === 'No Resuelto')?.value || 0;
+                  const total = kpis.totalConversaciones;
+                  const tasaResolucion = Math.round((resuelto + parcial) / total * 100);
+                  const tasaNoResuelto = Math.round(noResuelto / total * 100);
+                  return `${tasaResolucion}% de los casos fueron resueltos total o parcialmente. Solo ${tasaNoResuelto}% quedó sin resolver. Excelente ratio para soporte técnico especializado.`;
+                })()}
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
               <h3 className="font-bold text-lg mb-2">Área de Mejora</h3>
               <p className="text-slate-300 text-sm">
-                20% de conversaciones sin seguimiento. Implementar sistema de cierre
-                obligatorio y encuestas de satisfacción post-atención.
+                {(() => {
+                  const sinSeguimiento = resolucion.find(r => r.name === 'Sin Seguimiento')?.value || 0;
+                  const total = kpis.totalConversaciones;
+                  const tasaSinSeguimiento = Math.round((sinSeguimiento / total) * 100 * 10) / 10;
+                  return `${tasaSinSeguimiento}% de conversaciones sin seguimiento. Implementar sistema de cierre obligatorio y encuestas de satisfacción post-atención.`;
+                })()}
               </p>
             </div>
             <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
               <h3 className="font-bold text-lg mb-2">Foco 2026</h3>
               <p className="text-slate-300 text-sm">
-                TBC y equipos GNSS (R12i, R8) concentran la mayoría de consultas.
-                Crear base de conocimiento y videos tutoriales para estos productos.
+                {dataSource === 'soporte'
+                  ? `${productos[0]?.producto || 'TBC'} y equipos GNSS (${productos[1]?.producto || 'R12'}, ${productos[2]?.producto || 'R8'}) concentran la mayoría de consultas. Crear base de conocimiento y videos tutoriales para estos productos.`
+                  : `${productos[0]?.producto || 'UAS'} y ${productos[1]?.producto || 'Software'} concentran la mayoría de consultas. Fortalecer capacitación en configuración de drones y procesamiento de datos.`
+                }
               </p>
             </div>
           </div>
@@ -475,8 +554,12 @@ export default function ReporteSoporte2025() {
 
         {/* Footer */}
         <footer className="mt-12 text-center text-slate-500 text-sm">
-          <p>Reporte generado automáticamente · Análisis de 559 conversaciones · Período: Enero - Diciembre 2025</p>
-          <p className="mt-1">GEOCOM ·Soporte GNSS-Óptica 2025</p>
+          <p>
+            Reporte generado automáticamente · Análisis de {kpis.totalConversaciones} conversaciones · Período: Enero - Diciembre 2025
+          </p>
+          <p className="mt-1">
+            GEOCOM · {dataSource === 'soporte' ? 'Soporte GNSS-Óptica' : 'Soporte UAS/Drones'} 2025
+          </p>
         </footer>
       </main>
     </div>

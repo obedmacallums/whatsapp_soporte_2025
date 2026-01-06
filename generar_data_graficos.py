@@ -2,24 +2,34 @@
 """
 WhatsApp Analytics Data Generator
 Generates dashboard JSON from CSV data
+
+Supports two CSV formats:
+- chats: chats_conversations_2025.csv (JSON ai_analysis column)
+- conversations: conversations2_analysis.csv (separate columns)
 """
 
 import pandas as pd
 import json
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 import logging
 from collections import Counter
 import unicodedata
 import re
+import argparse
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
-# Constants
-CSV_PATH = Path(__file__).parent / 'data' / 'chats_conversations_2025.csv'
-OUTPUT_PATH = Path(__file__).parent / 'frontend' / 'src' / 'data' / 'dashboard-data.json'
+# Constants - Default paths
+DEFAULT_CSV_PATH = Path(__file__).parent / 'data' / 'chats_conversations_2025.csv'
+
+# Output paths by format type
+OUTPUT_PATHS = {
+    'chats': Path(__file__).parent / 'frontend' / 'src' / 'data' / 'soporte-dashboard-data.json',
+    'conversations': Path(__file__).parent / 'frontend' / 'src' / 'data' / 'uas-dashboard-data.json'
+}
 
 RESOLUTION_MAP = {
     'SI': 'Resuelto',
@@ -135,6 +145,80 @@ EXCLUDED_PRODUCTS = [
 ]
 
 
+def parse_args() -> argparse.Namespace:
+    """
+    Parse command line arguments
+
+    Returns:
+        Namespace with input, output, and format arguments
+    """
+    parser = argparse.ArgumentParser(
+        description='Generate dashboard JSON from WhatsApp CSV data',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Use default chats format
+  python generar_data_graficos.py
+
+  # Use conversations format (auto-detected)
+  python generar_data_graficos.py -i data/conversations2_analysis.csv
+
+  # Specify format explicitly
+  python generar_data_graficos.py -i data/conversations2_analysis.csv -f conversations
+
+  # Custom output path
+  python generar_data_graficos.py -i data/conversations2_analysis.csv -o output/custom.json
+        """
+    )
+    parser.add_argument(
+        '--input', '-i',
+        type=str,
+        help='Path to input CSV file (default: data/chats_conversations_2025.csv)'
+    )
+    parser.add_argument(
+        '--output', '-o',
+        type=str,
+        help='Path to output JSON file (default: based on format type)'
+    )
+    parser.add_argument(
+        '--format', '-f',
+        choices=['chats', 'conversations'],
+        help='CSV format type: chats (JSON ai_analysis) or conversations (separate columns). Auto-detected if not specified.'
+    )
+    return parser.parse_args()
+
+
+def detect_csv_format(csv_path: Path) -> str:
+    """
+    Detect CSV format by checking column names
+
+    Args:
+        csv_path: Path to CSV file
+
+    Returns:
+        'chats' if has ai_analysis column (JSON format)
+        'conversations' if has ai_provider column (separate columns)
+
+    Raises:
+        ValueError: If format cannot be determined
+    """
+    logger.info(f"Detecting CSV format for {csv_path}")
+    df_sample = pd.read_csv(csv_path, nrows=1, encoding='utf-8')
+    columns = df_sample.columns.tolist()
+
+    if 'ai_analysis' in columns:
+        logger.info("Detected format: chats (JSON ai_analysis)")
+        return 'chats'
+    elif 'ai_provider' in columns or ('main_question' in columns and 'ai_analysis' not in columns):
+        logger.info("Detected format: conversations (separate columns)")
+        return 'conversations'
+    else:
+        raise ValueError(
+            f"Unknown CSV format. Expected 'ai_analysis' or 'ai_provider' column. "
+            f"Found columns: {columns}"
+        )
+
+
 def normalize_text(text: str) -> str:
     """
     Normaliza texto para comparación y agrupación consistente
@@ -196,14 +280,18 @@ def normalize_product_name(product: str) -> str:
     return product_clean.title()
 
 
-def load_and_prepare_data(csv_path: Path) -> pd.DataFrame:
+def load_chats_format(csv_path: Path) -> pd.DataFrame:
     """
-    Load CSV and expand ai_analysis JSON into columns
+    Load CSV in 'chats' format (chats_conversations_2025.csv)
+    This format has ai_analysis as a JSON column
+
+    Args:
+        csv_path: Path to CSV file
 
     Returns:
-        DataFrame with ai_analysis fields as columns
+        DataFrame with ai_analysis fields expanded as columns
     """
-    logger.info(f"Loading CSV from {csv_path}")
+    logger.info(f"Loading CSV (chats format) from {csv_path}")
 
     # 1. Load CSV with UTF-8 encoding
     df = pd.read_csv(csv_path, encoding='utf-8')
@@ -220,7 +308,9 @@ def load_and_prepare_data(csv_path: Path) -> pd.DataFrame:
                 'problem_type': 'otro',
                 'resolution': 'SIN_SEGUIMIENTO',
                 'satisfaction': 'NO_DETERMINABLE',
-                'agent_name': 'NO_IDENTIFICADO'
+                'agent_name': 'NO_IDENTIFICADO',
+                'main_question': '',
+                'insights': ''
             }
 
     # 3. Expand JSON into separate columns
@@ -239,18 +329,112 @@ def load_and_prepare_data(csv_path: Path) -> pd.DataFrame:
     # 5. Log data quality
     logger.info(f"Loaded {len(df)} conversations")
     logger.info(f"Date parse success: {df['first_message_dt'].notna().sum()}/{len(df)}")
+    logger.info(f"Has total_messages: True")
 
     return df
+
+
+def load_conversations_format(csv_path: Path) -> pd.DataFrame:
+    """
+    Load CSV in 'conversations' format (conversations2_analysis.csv)
+    This format has separate columns for each analysis field
+
+    Args:
+        csv_path: Path to CSV file
+
+    Returns:
+        DataFrame normalized to match chats format structure
+    """
+    logger.info(f"Loading CSV (conversations format) from {csv_path}")
+
+    # 1. Load CSV with UTF-8 encoding
+    df = pd.read_csv(csv_path, encoding='utf-8')
+
+    # 2. Normalize column names to match chats format
+    # Use conversation_id as contact_jid equivalent
+    df['contact_jid'] = df['conversation_id'].fillna(df.get('conversation', 'unknown'))
+
+    # 3. Create ai_data dict for compatibility with existing functions
+    def create_ai_data(row):
+        return {
+            'main_question': row.get('main_question', ''),
+            'category': row.get('category', 'OTRO'),
+            'subcategory': row.get('subcategory', 'General'),
+            'problem_type': row.get('problem_type', 'otro'),
+            'resolution': row.get('resolution', 'SIN_SEGUIMIENTO'),
+            'satisfaction': row.get('satisfaction', 'NO_DETERMINABLE'),
+            'agent_name': row.get('agent_name', 'NO_IDENTIFICADO'),
+            'insights': row.get('insights', '')
+        }
+
+    df['ai_data'] = df.apply(create_ai_data, axis=1)
+
+    # 4. Ensure required columns exist (these already exist in this format)
+    # Fill missing values with defaults
+    df['category'] = df['category'].fillna('OTRO')
+    df['subcategory'] = df['subcategory'].fillna('General')
+    df['problem_type'] = df['problem_type'].fillna('otro')
+    df['resolution'] = df['resolution'].fillna('SIN_SEGUIMIENTO')
+    df['satisfaction'] = df['satisfaction'].fillna('NO_DETERMINABLE')
+    df['agent_name'] = df['agent_name'].fillna('NO_IDENTIFICADO')
+
+    # 5. This format does NOT have total_messages - set to None/0
+    # We don't create a fake total_messages column, functions will check for it
+    if 'total_messages' not in df.columns:
+        logger.info("Note: 'total_messages' column not present in this format")
+
+    # 6. Parse datetime columns (format is YYYY-MM-DD)
+    df['first_message_dt'] = pd.to_datetime(df['first_message'], errors='coerce')
+    df['month_num'] = df['first_message_dt'].dt.month
+
+    # 7. Log data quality
+    logger.info(f"Loaded {len(df)} conversations")
+    logger.info(f"Date parse success: {df['first_message_dt'].notna().sum()}/{len(df)}")
+    logger.info(f"Has total_messages: {'total_messages' in df.columns}")
+
+    return df
+
+
+def load_data(csv_path: Path, csv_format: str) -> pd.DataFrame:
+    """
+    Load CSV data using the appropriate loader based on format
+
+    Args:
+        csv_path: Path to CSV file
+        csv_format: 'chats' or 'conversations'
+
+    Returns:
+        Normalized DataFrame
+    """
+    if csv_format == 'chats':
+        return load_chats_format(csv_path)
+    elif csv_format == 'conversations':
+        return load_conversations_format(csv_path)
+    else:
+        raise ValueError(f"Unknown format: {csv_format}")
 
 
 def calculate_kpis(df: pd.DataFrame) -> Dict[str, Any]:
     """
     Calculate 4 key performance indicators
+
+    Note: If 'total_messages' column is not present, message-related KPIs
+    will be returned as None (for JSON null serialization)
     """
     total_conversaciones = len(df)
-    total_mensajes = int(df['total_messages'].sum())
-    promedio_mensajes = round(total_mensajes / total_conversaciones, 1)
-    conversacion_mas_larga = int(df['total_messages'].max())
+
+    # Check if total_messages column exists
+    has_messages = 'total_messages' in df.columns and df['total_messages'].notna().any()
+
+    if has_messages:
+        total_mensajes = int(df['total_messages'].sum())
+        promedio_mensajes = round(total_mensajes / total_conversaciones, 1) if total_conversaciones > 0 else 0
+        conversacion_mas_larga = int(df['total_messages'].max())
+    else:
+        # Return None for JSON null serialization
+        total_mensajes = None
+        promedio_mensajes = None
+        conversacion_mas_larga = None
 
     return {
         'totalConversaciones': total_conversaciones,
@@ -326,26 +510,38 @@ def generate_satisfaccion(df: pd.DataFrame) -> List[Dict[str, Any]]:
 def generate_tendencia_mensual(df: pd.DataFrame) -> List[Dict[str, Any]]:
     """
     Generate monthly aggregation of conversations and messages
+
+    Note: If 'total_messages' column is not present, 'mensajes' will be null
     """
     # Filter out rows with invalid dates
     df_valid = df[df['month_num'].notna()].copy()
 
-    # Group by month
-    monthly = df_valid.groupby('month_num').agg({
-        'contact_jid': 'count',  # conversations
-        'total_messages': 'sum'   # messages
-    }).reset_index()
+    # Check if total_messages column exists
+    has_messages = 'total_messages' in df.columns and df['total_messages'].notna().any()
 
-    monthly.columns = ['month_num', 'conversaciones', 'mensajes']
+    # Group by month
+    if has_messages:
+        monthly = df_valid.groupby('month_num').agg({
+            'contact_jid': 'count',  # conversations
+            'total_messages': 'sum'   # messages
+        }).reset_index()
+        monthly.columns = ['month_num', 'conversaciones', 'mensajes']
+    else:
+        monthly = df_valid.groupby('month_num').agg({
+            'contact_jid': 'count'  # conversations only
+        }).reset_index()
+        monthly.columns = ['month_num', 'conversaciones']
+        monthly['mensajes'] = None
 
     # Convert to list of dicts with Spanish month names
     result = []
     for _, row in monthly.iterrows():
         month_num = int(row['month_num'])
+        mensajes_val = int(row['mensajes']) if pd.notna(row['mensajes']) else None
         result.append({
             'mes': MONTH_NAMES.get(month_num, f"M{month_num}"),
             'conversaciones': int(row['conversaciones']),
-            'mensajes': int(row['mensajes'])
+            'mensajes': mensajes_val
         })
 
     # Ensure chronological order
@@ -438,10 +634,12 @@ def select_top_conversations(df: pd.DataFrame, n: int = 5) -> List[Dict[str, Any
 
     Criteria:
     - satisfaction == "ALTA" (required)
-    - Insights length (weight: 0.4)
+    - Insights length (weight: 0.5 when no messages, 0.4 otherwise)
     - Category diversity (weight: 0.3)
     - Resolution quality (weight: 0.2)
-    - Message count in sweet spot 50-300 (weight: 0.1)
+    - Message count in sweet spot 50-300 (weight: 0.1, only if available)
+
+    Note: If 'total_messages' is not available, scoring uses only insights and resolution
     """
     # Filter to ALTA satisfaction AND SI resolution
     high_sat = df[(df['satisfaction'] == 'ALTA') & (df['resolution'] == 'SI')].copy()
@@ -463,6 +661,9 @@ def select_top_conversations(df: pd.DataFrame, n: int = 5) -> List[Dict[str, Any
         logger.warning("No high satisfaction conversations with sufficient insights")
         return []
 
+    # Check if total_messages column exists
+    has_messages = 'total_messages' in df.columns and df['total_messages'].notna().any()
+
     # Normalize scores (0-1 scale)
     max_insights = high_sat['insights_len'].max()
     high_sat['insights_score'] = high_sat['insights_len'] / max_insights if max_insights > 0 else 0
@@ -471,17 +672,23 @@ def select_top_conversations(df: pd.DataFrame, n: int = 5) -> List[Dict[str, Any
     resolution_scores = {'SI': 1.0, 'PARCIAL': 0.6, 'NO': 0.3, 'SIN_SEGUIMIENTO': 0}
     high_sat['resolution_score'] = high_sat['resolution'].map(resolution_scores).fillna(0)
 
-    # Message count score (bell curve, peak at 175)
-    high_sat['msg_score'] = high_sat['total_messages'].apply(
-        lambda x: 1.0 if 50 <= x <= 300 else max(0, 1 - abs(x - 175) / 500)
-    )
-
-    # Calculate weighted total score
-    high_sat['total_score'] = (
-        high_sat['insights_score'] * 0.4 +
-        high_sat['resolution_score'] * 0.2 +
-        high_sat['msg_score'] * 0.1
-    )
+    # Message count score (only if available)
+    if has_messages:
+        high_sat['msg_score'] = high_sat['total_messages'].apply(
+            lambda x: 1.0 if 50 <= x <= 300 else max(0, 1 - abs(x - 175) / 500)
+        )
+        # Calculate weighted total score with message component
+        high_sat['total_score'] = (
+            high_sat['insights_score'] * 0.4 +
+            high_sat['resolution_score'] * 0.2 +
+            high_sat['msg_score'] * 0.1
+        )
+    else:
+        # Calculate weighted total score without message component
+        high_sat['total_score'] = (
+            high_sat['insights_score'] * 0.5 +
+            high_sat['resolution_score'] * 0.3
+        )
 
     # Sort by score and select top N ensuring category diversity
     selected = []
@@ -508,13 +715,15 @@ def select_top_conversations(df: pd.DataFrame, n: int = 5) -> List[Dict[str, Any
     result = []
     for row in selected:
         ai_data = row['ai_data']
+        # Handle totalMessages - use None if not available
+        total_messages_val = int(row['total_messages']) if has_messages else None
         result.append({
             'id': row['contact_jid'],
             'category': row['category'],
             'mainQuestion': ai_data.get('main_question', ''),
             'insights': ai_data.get('insights', ''),
             'subcategory': row['subcategory'],
-            'totalMessages': int(row['total_messages'])
+            'totalMessages': total_messages_val
         })
 
     logger.info(f"Selected {len(result)} conversation examples from {len(high_sat)} candidates")
@@ -525,13 +734,38 @@ def select_top_conversations(df: pd.DataFrame, n: int = 5) -> List[Dict[str, Any
 def main():
     """
     Main execution: load data, generate all datasets, write JSON
+
+    Supports two CSV formats via command line arguments:
+    - chats: chats_conversations_2025.csv (JSON ai_analysis)
+    - conversations: conversations2_analysis.csv (separate columns)
     """
+    # Parse command line arguments
+    args = parse_args()
+
     logger.info("Starting data generation...")
 
-    # 1. Load and prepare data
-    df = load_and_prepare_data(CSV_PATH)
+    # 1. Determine input path
+    csv_path = Path(args.input) if args.input else DEFAULT_CSV_PATH
+    logger.info(f"Input file: {csv_path}")
 
-    # 2. Generate all datasets (SIN agentes)
+    # 2. Detect or use specified format
+    if args.format:
+        csv_format = args.format
+        logger.info(f"Using specified format: {csv_format}")
+    else:
+        csv_format = detect_csv_format(csv_path)
+
+    # 3. Determine output path
+    if args.output:
+        output_path = Path(args.output)
+    else:
+        output_path = OUTPUT_PATHS[csv_format]
+    logger.info(f"Output file: {output_path}")
+
+    # 4. Load and prepare data
+    df = load_data(csv_path, csv_format)
+
+    # 5. Generate all datasets
     dashboard_data = {
         'kpis': calculate_kpis(df),
         'categorias': generate_categorias(df),
@@ -544,16 +778,25 @@ def main():
         'conversationExamples': select_top_conversations(df, n=5)
     }
 
-    # 3. Create output directory if needed
-    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    # 6. Create output directory if needed
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # 4. Write JSON
-    with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
+    # 7. Write JSON
+    with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(dashboard_data, f, ensure_ascii=False, indent=2)
 
-    logger.info(f"✓ Successfully generated {OUTPUT_PATH}")
+    # 8. Log summary
+    logger.info(f"✓ Successfully generated {output_path}")
+    logger.info(f"  - Format: {csv_format}")
     logger.info(f"  - {dashboard_data['kpis']['totalConversaciones']} conversations")
-    logger.info(f"  - {dashboard_data['kpis']['totalMensajes']} messages")
+
+    # Handle None values in logging for message stats
+    total_msgs = dashboard_data['kpis']['totalMensajes']
+    if total_msgs is not None:
+        logger.info(f"  - {total_msgs} messages")
+    else:
+        logger.info(f"  - messages: N/A (not in source format)")
+
     logger.info(f"  - {len(dashboard_data['categorias'])} categories")
     logger.info(f"  - {len(dashboard_data['productos'])} products (consolidated)")
     logger.info(f"  - {len(dashboard_data['tendenciaMensual'])} months")

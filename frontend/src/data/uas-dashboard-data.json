@@ -1,0 +1,251 @@
+{
+  "kpis": {
+    "totalConversaciones": 323,
+    "totalMensajes": null,
+    "promedioMensajes": null,
+    "conversacionMasLarga": null
+  },
+  "categorias": [
+    {
+      "name": "UAS",
+      "value": 206
+    },
+    {
+      "name": "SOFTWARE",
+      "value": 96
+    },
+    {
+      "name": "SENSORES",
+      "value": 12
+    },
+    {
+      "name": "GNSS",
+      "value": 7
+    },
+    {
+      "name": "RC",
+      "value": 2
+    }
+  ],
+  "resolucion": [
+    {
+      "name": "Resuelto",
+      "value": 177,
+      "pct": "55%"
+    },
+    {
+      "name": "Parcial",
+      "value": 77,
+      "pct": "24%"
+    },
+    {
+      "name": "Sin Seguimiento",
+      "value": 66,
+      "pct": "20%"
+    },
+    {
+      "name": "No Resuelto",
+      "value": 3,
+      "pct": "1%"
+    }
+  ],
+  "satisfaccion": [
+    {
+      "name": "Alta",
+      "value": 219
+    },
+    {
+      "name": "No Determinable",
+      "value": 71
+    },
+    {
+      "name": "Media",
+      "value": 29
+    },
+    {
+      "name": "Baja",
+      "value": 4
+    }
+  ],
+  "tendenciaMensual": [
+    {
+      "mes": "Ene",
+      "conversaciones": 32,
+      "mensajes": null
+    },
+    {
+      "mes": "Feb",
+      "conversaciones": 21,
+      "mensajes": null
+    },
+    {
+      "mes": "Mar",
+      "conversaciones": 30,
+      "mensajes": null
+    },
+    {
+      "mes": "Apr",
+      "conversaciones": 28,
+      "mensajes": null
+    },
+    {
+      "mes": "May",
+      "conversaciones": 26,
+      "mensajes": null
+    },
+    {
+      "mes": "Jun",
+      "conversaciones": 22,
+      "mensajes": null
+    },
+    {
+      "mes": "Jul",
+      "conversaciones": 28,
+      "mensajes": null
+    },
+    {
+      "mes": "Ago",
+      "conversaciones": 33,
+      "mensajes": null
+    },
+    {
+      "mes": "Sep",
+      "conversaciones": 20,
+      "mensajes": null
+    },
+    {
+      "mes": "Oct",
+      "conversaciones": 18,
+      "mensajes": null
+    },
+    {
+      "mes": "Nov",
+      "conversaciones": 35,
+      "mensajes": null
+    },
+    {
+      "mes": "Dic",
+      "conversaciones": 30,
+      "mensajes": null
+    }
+  ],
+  "tiposProblema": [
+    {
+      "tipo": "Consulta Técnica",
+      "cantidad": 100
+    },
+    {
+      "tipo": "Software",
+      "cantidad": 59
+    },
+    {
+      "tipo": "Licencia",
+      "cantidad": 51
+    },
+    {
+      "tipo": "Configuración",
+      "cantidad": 39
+    },
+    {
+      "tipo": "Capacitación",
+      "cantidad": 25
+    },
+    {
+      "tipo": "Hardware",
+      "cantidad": 22
+    },
+    {
+      "tipo": "Otro",
+      "cantidad": 12
+    }
+  ],
+  "productos": [
+    {
+      "producto": "Geocom Uas Sync",
+      "consultas": 35
+    },
+    {
+      "producto": "Mavic 3 Enterprise",
+      "consultas": 28
+    },
+    {
+      "producto": "Matrice 4 Enterprise",
+      "consultas": 22
+    },
+    {
+      "producto": "TBC",
+      "consultas": 19
+    },
+    {
+      "producto": "Dji Terra",
+      "consultas": 18
+    },
+    {
+      "producto": "Matrice 300",
+      "consultas": 14
+    },
+    {
+      "producto": "Agisoft Metashape",
+      "consultas": 14
+    }
+  ],
+  "radarData": [
+    {
+      "subject": "Resolución",
+      "A": 79,
+      "fullMark": 100
+    },
+    {
+      "subject": "Satisfacción",
+      "A": 77,
+      "fullMark": 100
+    },
+    {
+      "subject": "Seguimiento",
+      "A": 80,
+      "fullMark": 100
+    }
+  ],
+  "conversationExamples": [
+    {
+      "id": "kpuirszc",
+      "category": "SOFTWARE",
+      "mainQuestion": "Consultas sobre carga de baterías de M300, errores de cota en procesamiento DJI Terra (PPK) y transformación de coordenadas WGS84 a PSAD56 en minería.",
+      "insights": "Cliente recurrente con consultas de alta complejidad técnica. Se abordaron temas de hardware (estación de carga), fotogrametría (errores de 5m en cota con sensor P1) y geodesia (configuración de datum local PSAD56 vs global en TBC). El soporte incluyó recomendaciones sobre el uso de archivos DC y modelos geoidales (EGM08) para asegurar la precisión vertical en entornos mineros.",
+      "subcategory": "DJI Terra | TBC | Matrice 300",
+      "totalMessages": null
+    },
+    {
+      "id": "xkag238v",
+      "category": "UAS",
+      "mainQuestion": "Consultas técnicas recurrentes sobre operación, carga, transferencia de datos, normativa de baterías y configuración RTK para drones Matrice 300 y M30T.",
+      "insights": "Cliente institucional (MOP) con relación de soporte de más de 2 años. Consultas variadas sobre ecosistema DJI (M300, M30T, L1) y software de procesamiento (Agisoft). El soporte abarca desde dudas básicas de hardware hasta configuraciones críticas de RTK y acceso a plataforma educativa. Se evidencia un alto nivel de confianza y coordinación para actividades en terreno.",
+      "subcategory": "Matrice 300 / M30T",
+      "totalMessages": null
+    },
+    {
+      "id": "9tip3hhz",
+      "category": "SENSORES",
+      "mainQuestion": "Problemas de procesamiento Lidar L2 en DJI Terra (huecos en datos), errores de secuencia por fotos manuales, dudas sobre límites de altura y configuración de rutas de vuelo.",
+      "insights": "El cliente provocó errores de procesamiento al capturar fotos manuales durante el vuelo, lo que alteró la nomenclatura de archivos Lidar. Se solucionó mediante renombramiento de archivos. Se observa una relación de soporte técnica recurrente durante más de un año.",
+      "subcategory": "Lidar L2",
+      "totalMessages": null
+    },
+    {
+      "id": "zbkier3r",
+      "category": "RC",
+      "mainQuestion": "Carga limitada hasta 45% en control DJI RC Plus al usar cargador de Smart Controller y consulta sobre distorsión de barril en imágenes del sensor Zenmuse L2.",
+      "insights": "El cliente intentaba cargar el RC Plus con un cargador de Smart Controller (insuficiente potencia); se aclaró que requiere 45W-65W. Se explicó que la distorsión de barril en el L2 es normal.",
+      "subcategory": "DJI RC Plus",
+      "totalMessages": null
+    },
+    {
+      "id": "iek8rtkr",
+      "category": "GNSS",
+      "mainQuestion": "Consulta sobre el valor de compra y arriendo de equipos GPS diferencial para una licitación de la DGA.",
+      "insights": "El cliente de la DGA solicita información de precios para licitación de estudios geofísicos. El soporte UAS lo deriva correctamente al gerente de la división de arriendos GNSS, Rodrigo Díaz.",
+      "subcategory": "GPS diferencial",
+      "totalMessages": null
+    }
+  ]
+}
