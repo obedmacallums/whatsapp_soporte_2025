@@ -243,7 +243,7 @@
     "id": "ouz62b3x",
     "category": "SOFTWARE",
     "mainQuestion": "Error al sincronizar fotografías con el archivo MRK en GEOCOM UAS Sync; el proceso se interrumpe por falta de coincidencia entre eventos y capturas.",
-    "insights": "El problema se originó por un desfase entre los registros del archivo MRK y las fotos capturadas. Se resolvió eliminando las dos primeras filas del MRK y las dos primeras imágenes. El cliente notó que el error variaba según si usaba tiempo UTC o GPS en la trayectoria. El soporte brindó seguimiento efectivo hasta la confirmación de éxito.",
+    "insights": "El problema se originó por un desfase entre los registros del archivo MRK y las fotos capturadas. Se resolvió eliminando las dos primeras filas del MRK y las dos primeras imágenes. El cliente notó que el error variaba según si usaba tiempo UTC o GPS en la trayectoria. El soporte brindó seguimiento hasta la resolución del problema.",
     "subcategory": "GEOCOM UAS Sync",
     "totalMessages": null
   }
