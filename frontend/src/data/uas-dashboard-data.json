@@ -207,45 +207,45 @@
     }
   ],
   "conversationExamples": [
-    {
-      "id": "kpuirszc",
-      "category": "SOFTWARE",
-      "mainQuestion": "Consultas sobre carga de baterías de M300, errores de cota en procesamiento DJI Terra (PPK) y transformación de coordenadas WGS84 a PSAD56 en minería.",
-      "insights": "Cliente recurrente con consultas de alta complejidad técnica. Se abordaron temas de hardware (estación de carga), fotogrametría (errores de 5m en cota con sensor P1) y geodesia (configuración de datum local PSAD56 vs global en TBC). El soporte incluyó recomendaciones sobre el uso de archivos DC y modelos geoidales (EGM08) para asegurar la precisión vertical en entornos mineros.",
-      "subcategory": "DJI Terra | TBC | Matrice 300",
-      "totalMessages": null
-    },
-    {
-      "id": "xkag238v",
-      "category": "UAS",
-      "mainQuestion": "Consultas técnicas recurrentes sobre operación, carga, transferencia de datos, normativa de baterías y configuración RTK para drones Matrice 300 y M30T.",
-      "insights": "Cliente institucional (MOP) con relación de soporte de más de 2 años. Consultas variadas sobre ecosistema DJI (M300, M30T, L1) y software de procesamiento (Agisoft). El soporte abarca desde dudas básicas de hardware hasta configuraciones críticas de RTK y acceso a plataforma educativa. Se evidencia un alto nivel de confianza y coordinación para actividades en terreno.",
-      "subcategory": "Matrice 300 / M30T",
-      "totalMessages": null
-    },
-    {
-      "id": "9tip3hhz",
-      "category": "SENSORES",
-      "mainQuestion": "Problemas de procesamiento Lidar L2 en DJI Terra (huecos en datos), errores de secuencia por fotos manuales, dudas sobre límites de altura y configuración de rutas de vuelo.",
-      "insights": "El cliente provocó errores de procesamiento al capturar fotos manuales durante el vuelo, lo que alteró la nomenclatura de archivos Lidar. Se solucionó mediante renombramiento de archivos. Se observa una relación de soporte técnica recurrente durante más de un año.",
-      "subcategory": "Lidar L2",
-      "totalMessages": null
-    },
-    {
-      "id": "zbkier3r",
-      "category": "RC",
-      "mainQuestion": "Carga limitada hasta 45% en control DJI RC Plus al usar cargador de Smart Controller y consulta sobre distorsión de barril en imágenes del sensor Zenmuse L2.",
-      "insights": "El cliente intentaba cargar el RC Plus con un cargador de Smart Controller (insuficiente potencia); se aclaró que requiere 45W-65W. Se explicó que la distorsión de barril en el L2 es normal.",
-      "subcategory": "DJI RC Plus",
-      "totalMessages": null
-    },
-    {
-      "id": "iek8rtkr",
-      "category": "GNSS",
-      "mainQuestion": "Consulta sobre el valor de compra y arriendo de equipos GPS diferencial para una licitación de la DGA.",
-      "insights": "El cliente de la DGA solicita información de precios para licitación de estudios geofísicos. El soporte UAS lo deriva correctamente al gerente de la división de arriendos GNSS, Rodrigo Díaz.",
-      "subcategory": "GPS diferencial",
-      "totalMessages": null
-    }
-  ]
+  {
+    "id": "kpuirszc",
+    "category": "SOFTWARE",
+    "mainQuestion": "Consultas sobre carga de baterías de M300, errores de cota en procesamiento DJI Terra (PPK) y transformación de coordenadas WGS84 a PSAD56 en minería.",
+    "insights": "Cliente recurrente con consultas de alta complejidad técnica. Se abordaron temas de hardware (estación de carga), fotogrametría (errores de 5m en cota con sensor P1) y geodesia (configuración de datum local PSAD56 vs global en TBC). El soporte incluyó recomendaciones sobre el uso de archivos DC y modelos geoidales (EGM08) para asegurar la precisión vertical en entornos mineros.",
+    "subcategory": "DJI Terra | TBC | Matrice 300",
+    "totalMessages": null
+  },
+  {
+    "id": "xkag238v",
+    "category": "UAS",
+    "mainQuestion": "Consultas técnicas recurrentes sobre operación, carga, transferencia de datos, normativa de baterías y configuración RTK para drones Matrice 300 y M30T.",
+    "insights": "Cliente institucional (MOP) con relación de soporte de más de 2 años. Consultas variadas sobre ecosistema DJI (M300, M30T, L1) y software de procesamiento (Agisoft). El soporte abarca desde dudas básicas de hardware hasta configuraciones críticas de RTK y acceso a plataforma educativa. Se evidencia un alto nivel de confianza y coordinación para actividades en terreno.",
+    "subcategory": "Matrice 300 / M30T",
+    "totalMessages": null
+  },
+  {
+    "id": "9tip3hhz",
+    "category": "SENSORES",
+    "mainQuestion": "Problemas de procesamiento Lidar L2 en DJI Terra (zonas sin información en la nube de puntos), errores de secuencia por fotos manuales, dudas sobre límites de altura y configuración de rutas de vuelo.",
+    "insights": "El cliente provocó errores de procesamiento al capturar fotos manuales durante el vuelo, lo que alteró la nomenclatura de archivos Lidar. Se solucionó mediante renombramiento de archivos. Se observa una relación de soporte técnica recurrente durante más de un año.",
+    "subcategory": "Lidar L2",
+    "totalMessages": null
+  },
+  {
+    "id": "lhfz74s5",
+    "category": "UAS",
+    "mainQuestion": "Consultas técnicas recurrentes sobre Matrice 4E: fallos en procesamiento de trayectoria en TBC, configuración de rutas Waypoints, lógica de RTH y archivos de posicionamiento faltantes.",
+    "insights": "El cliente (Geosupport) es un usuario técnico recurrente en transición de Phantom 4 RTK a Matrice 4E. Las consultas abarcan desde flujos de post-procesamiento (RINEX, TBC) hasta lógica de vuelo y seguridad. Se resolvieron dudas mediante material audiovisual, explicaciones de cambios en la lógica de DJI y recomendaciones de mantenimiento de firmware.",
+    "subcategory": "Matrice 4 Enterprise",
+    "totalMessages": null
+  },
+  {
+    "id": "ouz62b3x",
+    "category": "SOFTWARE",
+    "mainQuestion": "Error al sincronizar fotografías con el archivo MRK en GEOCOM UAS Sync; el proceso se interrumpe por falta de coincidencia entre eventos y capturas.",
+    "insights": "El problema se originó por un desfase entre los registros del archivo MRK y las fotos capturadas. Se resolvió eliminando las dos primeras filas del MRK y las dos primeras imágenes. El cliente notó que el error variaba según si usaba tiempo UTC o GPS en la trayectoria. El soporte brindó seguimiento efectivo hasta la confirmación de éxito.",
+    "subcategory": "GEOCOM UAS Sync",
+    "totalMessages": null
+  }
+]
 }
